@@ -1,6 +1,6 @@
 # Jeda | The Sovereign Architect's Lab
 
-![Jeda](https://ik.imagekit.io/cbctech/Gemini_Generated_Image_17dvmp17dvmp17dv.png?updatedAt=1766390152502)
+![Jeda]([https://ik.imagekit.io/cbctech/Gemini_Generated_Image_17dvmp17dvmp17dv.png?updatedAt=1766390152502](https://ik.imagekit.io/cbctech/Gemini_Generated_Image_6bnyep6bnyep6bny.png))
 
 **Pause Daily. Build Slowly.** - A digital garden exploring the intersection of philosophy, mathematics, AI sovereignty, and community-driven learning.
 
