@@ -76,9 +76,9 @@
         /* Doodle as a scattered element */
         .doodle-container {
             position: absolute;
-            top: -80px; /* Position above/near title */
-            left: 50%;
-            transform: translateX(-50%) rotate(-5deg);
+            top: -120px; /* Moved up to clear title */
+            left: 60%; /* Offset to the right */
+            transform: translateX(-50%) rotate(5deg);
             z-index: 25;
             pointer-events: none; /* Let clicks pass through */
         }
@@ -190,13 +190,13 @@
         .note.cherry { background-color: var(--cherry); color: white; }
         .note.cherry h3, .note.cherry p { color: white; }
         
-        /* Positioning Classes - Desktop */
-        .pos-1 { top: 10%; left: 15%; transform: rotate(-5deg); }
-        .pos-2 { top: 15%; right: 20%; transform: rotate(4deg); }
-        .pos-3 { bottom: 20%; left: 20%; transform: rotate(3deg); }
-        .pos-4 { bottom: 15%; right: 15%; transform: rotate(-6deg); }
-        .pos-5 { top: 50%; left: 5%; transform: translateY(-50%) rotate(-8deg); }
-        .pos-6 { top: 50%; right: 5%; transform: translateY(-50%) rotate(5deg); }
+        /* Positioning Classes - Desktop (More scattered near center) */
+        .pos-1 { top: 15%; left: 30%; transform: rotate(-5deg); } /* Closer to top center */
+        .pos-2 { top: 25%; right: 25%; transform: rotate(4deg); } /* Closer to top center */
+        .pos-3 { top: 60%; left: 25%; transform: rotate(3deg); } /* Near center */
+        .pos-4 { top: 65%; right: 20%; transform: rotate(-6deg); } /* Near center */
+        .pos-5 { bottom: 10%; left: 10%; transform: rotate(-8deg); } /* Corner */
+        .pos-6 { bottom: 15%; right: 10%; transform: rotate(5deg); } /* Corner */
 
         /* --- Footer / Bottom CTA Area --- */
         .bottom-shelf {
@@ -308,9 +308,10 @@
             }
             
             .center-stage {
-                margin-top: 4rem; /* push down to clear nav */
-                margin-bottom: 2rem;
+                margin-top: 6rem; /* Push down significantly */
+                margin-bottom: 3rem;
                 padding: 1rem;
+                z-index: 10; /* Ensure title is behind top notes if they overlap */
             }
 
             .center-stage h1 {
@@ -318,18 +319,19 @@
             }
 
             .doodle-container {
-                top: -60px;
+                top: -90px;
+                left: 70%; /* Move aside on mobile too */
                 width: 100px;
             }
             
-            /* On mobile, scattered notes become a grid or stacked list but keep 'note' look */
+            /* On mobile, scattered notes logic */
             .scattered-notes {
                 position: relative;
                 height: auto;
                 width: 100%;
                 display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
+                flex-direction: column; /* Stack them but offset */
+                align-items: center;
                 gap: 1.5rem;
                 margin-bottom: 2rem;
                 pointer-events: auto;
@@ -341,16 +343,26 @@
                 left: auto !important;
                 right: auto !important;
                 bottom: auto !important;
-                transform: rotate(var(--mobile-rotate)) !important; /* Use variable for randomness */
-                width: 140px; /* Small enough for 2 columns */
-                min-height: 140px;
+                /* No transform important here, let nth-child handle it */
+                width: 160px;
+                min-height: 160px;
                 margin: 0;
             }
 
-            /* Assign random rotations for mobile via nth-child logic or classes */
-            .note:nth-child(odd) { --mobile-rotate: -2deg; }
-            .note:nth-child(even) { --mobile-rotate: 3deg; }
-            .note:nth-child(3n) { --mobile-rotate: 1deg; }
+            /* Manual scattering for mobile via nth-child */
+            .note:nth-child(1) { transform: translateX(-30%) rotate(-5deg); margin-top: -20px; } /* Above title area theoretically if we used absolute, but here it's flow. Let's make it look scattered. */
+            .note:nth-child(2) { transform: translateX(30%) rotate(4deg); margin-top: -40px; }
+            .note:nth-child(3) { transform: translateX(-20%) rotate(2deg); margin-top: -20px; }
+            .note:nth-child(4) { transform: translateX(25%) rotate(-3deg); margin-top: -20px; }
+            .note:nth-child(5) { transform: translateX(-10%) rotate(6deg); margin-top: -20px; }
+            .note:nth-child(6) { transform: translateX(15%) rotate(-4deg); margin-top: -20px; }
+            
+            /* Special handling to put some notes "above" or near title visually in flow? 
+               In flex column, they come after. To put them before, we'd need to change DOM order or use absolute. 
+               Let's keep them after but pull the first ones up negatively. */
+             .scattered-notes {
+                 margin-top: -50px; /* Pull the whole stack up to overlap title bottom */
+             }
         }
 
     </style>
