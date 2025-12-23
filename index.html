@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeda | The Sovereign Architect's Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=La+Belle+Aurore&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette */
+            --bg-garden: #F3F5EE; /* Soft off-white green */
+            --mustard: #E6C229;
+            --olive: #8A9A5B;
+            --cherry: #D9534F;
+            --paper: #FFFCF5;
+            --ink: #2C3E50;
+            --shadow-soft: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-garden);
+            background-image: radial-gradient(var(--olive) 0.5px, transparent 0.5px);
+            background-size: 20px 20px; /* Subtle dot pattern */
+            color: var(--ink);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Navigation / Header --- */
+        nav {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: flex-end; /* Logo is now center stage, nav is for actions */
+            align-items: center;
+            max-width: 1200px;
+            z-index: 10;
+        }
+
+        /* --- The Garden Board (Main Content) --- */
+        .garden-board {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 85vh; /* Takes up most of the screen */
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Center the title */
+        }
+
+        /* --- Center Title Block --- */
+        .center-stage {
+            z-index: 20;
+            text-align: center;
+            /* Removed background and border for cleaner look */
+            padding: 2rem;
+            max-width: 400px;
+            position: relative;
+        }
+
+        /* Doodle as a scattered element */
+        .doodle-container {
+            position: absolute;
+            top: -80px; /* Position above/near title */
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg);
+            z-index: 25;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        .doodle-img {
+            width: 140px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .center-stage h1 {
+            font-family: 'La Belle Aurore', cursive;
+            font-size: 5rem; /* Larger for impact without container */
+            color: var(--ink);
+            line-height: 0.9;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+        }
+
+        .center-stage p {
+            font-size: 1.2rem;
+            color: var(--olive);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.6);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* --- Sticky Note Container Logic --- */
+        .scattered-notes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* --- Sticky Note Styles --- */
+        .note {
+            pointer-events: auto;
+            width: 180px; /* Smaller default size */
+            min-height: 180px;
+            background: var(--paper);
+            padding: 1.2rem;
+            box-shadow: 3px 5px 15px var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            border-radius: 12px; /* More rounded corners */
+        }
+
+        /* The Tape/Pin Effect */
+        .note::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 20px;
+            background: rgba(255,255,255,0.5);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .note:hover {
+            transform: scale(1.15) rotate(0deg) !important;
+            z-index: 100;
+            box-shadow: 10px 20px 30px var(--shadow-hover);
+        }
+
+        .note h3 {
+            font-family: 'La Belle Aurore', cursive;
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+            color: var(--ink);
+            line-height: 1.1;
+        }
+
+        .note p {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #555;
+            flex-grow: 1;
+        }
+
+        .note-footer {
+            margin-top: 0.5rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 0.3rem;
+        }
+
+        /* Note Colors */
+        .note.mustard { background-color: var(--mustard); color: #333; }
+        .note.olive { background-color: var(--olive); color: white; }
+        .note.olive h3, .note.olive p { color: white; }
+        .note.cherry { background-color: var(--cherry); color: white; }
+        .note.cherry h3, .note.cherry p { color: white; }
+        
+        /* Positioning Classes - Desktop */
+        .pos-1 { top: 10%; left: 15%; transform: rotate(-5deg); }
+        .pos-2 { top: 15%; right: 20%; transform: rotate(4deg); }
+        .pos-3 { bottom: 20%; left: 20%; transform: rotate(3deg); }
+        .pos-4 { bottom: 15%; right: 15%; transform: rotate(-6deg); }
+        .pos-5 { top: 50%; left: 5%; transform: translateY(-50%) rotate(-8deg); }
+        .pos-6 { top: 50%; right: 5%; transform: translateY(-50%) rotate(5deg); }
+
+        /* --- Footer / Bottom CTA Area --- */
+        .bottom-shelf {
+            width: 100%;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(to top, var(--bg-garden), transparent);
+            margin-top: auto;
+            position: relative;
+            z-index: 30;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--mustard);
+            color: var(--ink);
+        }
+        
+        .btn-primary:hover {
+            background-color: #d4b220;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--olive);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #76854d;
+            transform: translateY(-2px);
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 62, 80, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem; /* reduced padding */
+            border-radius: 20px; /* rounded modal */
+            max-width: 450px;
+            width: 85%;
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #aaa;
+            background: none;
+            border: none;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .garden-board {
+                /* On mobile, use flex column but keep notes visible */
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding-top: 2rem;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            
+            .center-stage {
+                margin-top: 4rem; /* push down to clear nav */
+                margin-bottom: 2rem;
+                padding: 1rem;
+            }
+
+            .center-stage h1 {
+                font-size: 4rem;
+            }
+
+            .doodle-container {
+                top: -60px;
+                width: 100px;
+            }
+            
+            /* On mobile, scattered notes become a grid or stacked list but keep 'note' look */
+            .scattered-notes {
+                position: relative;
+                height: auto;
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+                pointer-events: auto;
+            }
+            
+            .note {
+                position: relative; /* Relative flow for mobile */
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                transform: rotate(var(--mobile-rotate)) !important; /* Use variable for randomness */
+                width: 140px; /* Small enough for 2 columns */
+                min-height: 140px;
+                margin: 0;
+            }
+
+            /* Assign random rotations for mobile via nth-child logic or classes */
+            .note:nth-child(odd) { --mobile-rotate: -2deg; }
+            .note:nth-child(even) { --mobile-rotate: 3deg; }
+            .note:nth-child(3n) { --mobile-rotate: 1deg; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation (Minimal) -->
+    <nav>
+        <a href="#join" class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Join the Collective</a>
+    </nav>
+
+    <!-- Main Garden Board -->
+    <main class="garden-board">
+        
+        <!-- Center Stage: Title & Branding -->
+        <div class="center-stage">
+            <div class="doodle-container">
+                <!-- Using the ImageKit URL provided -->
+                <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_17dvmp17dvmp17dv.png?updatedAt=1766390152502" alt="Jeda Doodle" class="doodle-img">
+            </div>
+            <h1>Jeda</h1>
+            <p>Pause Daily. Build Slowly.</p>
+        </div>
+
+        <!-- Scattered Interactive Notes -->
+        <div class="scattered-notes">
+            
+            <!-- Note 1: Al-Ghazali -->
+            <div class="note olive pos-1" onclick="openModal('The Soul', 'Exploring the inner architecture.', 'Currently reading: Ihya Ulumuddin by Al-Ghazali. Focus on Niat (Intention) and the purification of the heart as a prerequisite for building technology.')">
+                <h3>Al-Ghazali</h3>
+                <p>The internal operating system. Guarding the heart.</p>
+                <div class="note-footer">The Theory</div>
+            </div>
+
+            <!-- Note 2: Math / Polya -->
+            <div class="note white pos-2" onclick="openModal('Logic & Systems', 'Finding beauty in structure.', 'Reading: How to Solve It by G. Polya. Understanding the heuristics of problem-solving before writing a single line of code.')">
+                <h3>Polya's Math</h3>
+                <p>Heuristics. Geometry. The beauty of a solvable problem.</p>
+                <div class="note-footer">The Logic</div>
+            </div>
+
+            <!-- Note 3: AI Equation / Tech -->
+            <div class="note cherry pos-3" onclick="openModal('AI & Safety', 'Building the defense.', 'Researching: Local LLMs, Privacy Preservation, and the compute costs of sovereignty. Building Family-CommunityAI.')">
+                <h3>The AI Equation</h3>
+                <p>Alignment. Robustness. Cost of Sovereignty.</p>
+                <div class="note-footer">The Lab</div>
+            </div>
+
+            <!-- Note 4: The "Box" / Products -->
+            <div class="note mustard pos-4" onclick="openModal('Teringin / Products', 'Tangible creations.', 'Prototyping: Ocean Weight Dumbbells (Recycled Plastic) and the Jeda Candle Timer. Making ideas holdable.')">
+                <h3>The Box</h3>
+                <p>Physical artifacts. 3D Prints. Sewing. Tangible inputs.</p>
+                <div class="note-footer">The Hands</div>
+            </div>
+
+            <!-- Note 5: Articles / Curation -->
+            <div class="note white pos-5" onclick="openModal('Curated Reads', 'Filtering the noise.', 'Collection: Papers on Biomimicry, Gift Economy (Eisenstein), and Digital Minimalism. Curating a curriculum for the modern soul.')">
+                <h3>Articles</h3>
+                <p>Biomimicry. Gift Economy. Digital Minimalism.</p>
+                <div class="note-footer">The Library</div>
+            </div>
+
+            <!-- Note 6: Community -->
+            <div class="note olive pos-6" onclick="openModal('The Village', 'We build together.', 'Join the Jeda Collective. A monthly gathering to share our personal curriculums and build sovereign systems.')">
+                <h3>The Village</h3>
+                <p>Community. Shared Curriculum. Safe Spaces.</p>
+                <div class="note-footer">The Collective</div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-shelf" id="join">
+        <div class="cta-container">
+            <a href="https://instagram.com" target="_blank" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                Follow Jeda
+            </a>
+            <button class="btn btn-secondary" onclick="alert('Submission form coming soon! Prepare your 3-layer curriculum.')">
+                Share Your Curriculum
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Template -->
+    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="close-btn" onclick="toggleModal(false)">&times;</button>
+            <h2 id="modalTitle" style="font-family: 'La Belle Aurore', cursive; font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--cherry);">Topic</h2>
+            <p id="modalDesc" style="font-weight: 700; color: var(--olive); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-bottom: 1.5rem;">Description</p>
+            <p id="modalContent" style="font-size: 1.1rem; line-height: 1.6; color: #555;">Details go here.</p>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('infoModal');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+        const mContent = document.getElementById('modalContent');
+
+        function openModal(title, desc, content) {
+            mTitle.innerText = title;
+            mDesc.innerText = desc;
+            mContent.innerText = content;
+            modal.classList.add('active');
+        }
+
+        function closeModal(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function toggleModal(state) {
+            if(!state) modal.classList.remove('active');
+        }
+
+        // Slight parallax for the notes to make them feel like they are floating
+        document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth <= 900) return; // Disable parallax on mobile
+
+            const notes = document.querySelectorAll('.note');
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+
+            notes.forEach((note, index) => {
+                // Different speeds for depth perception
+                const speed = (index + 1) * 0.5;
+                // We keep the initial rotation defined in CSS classes by only adjusting translate
+                // This requires a bit more complex logic if we want to preserve specific rotations
+                // For simplicity here, we add a subtle drift
+                note.style.marginLeft = `${x * speed}px`;
+                note.style.marginTop = `${y * speed}px`;
+            });
+        });
+    </script>
+</body>
+</html>
