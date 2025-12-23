@@ -42,25 +42,71 @@
         /* --- Navigation / Header --- */
         nav {
             width: 100%;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
             display: flex;
-            justify-content: flex-end; /* Logo is now center stage, nav is for actions */
+            justify-content: space-between;
             align-items: center;
             max-width: 1200px;
-            z-index: 50; /* High z-index to stay clickable */
+            z-index: 50;
+            position: relative;
         }
+
+        .nav-right {
+            margin-left: auto;
+        }
+
+        /* --- Legend (Updated: Left Aligned, Smaller) --- */
+        .legend-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-start; /* Left aligned */
+            align-items: center;
+            padding: 0;
+            background: transparent;
+            border: none;
+            z-index: 40;
+            max-width: 60%;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem; /* Smaller font */
+            font-weight: 400;
+            font-style: italic;
+            color: var(--ink);
+            opacity: 0.5; /* Paler */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .swatch {
+            width: 8px; /* Smaller swatch */
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .swatch.olive { background: var(--olive); }
+        .swatch.cherry { background: var(--cherry); }
+        .swatch.mustard { background: var(--mustard); }
+        .swatch.white { background: var(--paper); }
 
         /* --- The Garden Board (Main Content) --- */
         .garden-board {
             position: relative;
             width: 100%;
             max-width: 1200px;
-            min-height: 85vh; /* Takes up most of the screen */
+            min-height: 85vh;
             margin: 0 auto;
             padding: 2rem;
             display: flex;
-            justify-content: center;
-            align-items: center; /* Center the title */
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center; 
         }
 
         /* --- Center Title Block --- */
@@ -70,26 +116,53 @@
             padding: 2rem;
             max-width: 400px;
             position: relative;
+            pointer-events: none;
+            margin-top: 2rem;
         }
 
-        /* Doodle as a background element */
+        /* Doodle Background Elements */
         .doodle-bg {
             position: absolute;
-            /* Positioned relative to garden-board, offset from center to avoid title */
-            top: 50px; 
-            left: 45%; 
-            transform: translateX(-50%) rotate(-15deg);
-            z-index: 1; /* Low z-index to be behind notes and title */
-            pointer-events: none; /* Let clicks pass through */
+            z-index: 0;
+            pointer-events: none;
             opacity: 0.8;
         }
 
+        .doodle-1 {
+            top: 40px; 
+            left: 10%; 
+            transform: rotate(-10deg);
+            width: 160px;
+        }
+
+        .doodle-2 {
+            bottom: 80px; 
+            right: 35%; 
+            transform: rotate(15deg);
+            width: 150px;
+        }
+
         .doodle-img {
-            width: 180px; /* Slightly larger as background */
+            width: 100%;
             height: auto;
             display: block;
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.05));
         }
+
+        /* Stamp Images */
+        .stamp-img {
+            position: absolute;
+            width: 60px; /* Small stamp size */
+            height: auto;
+            z-index: 1; /* Below notes but above background */
+            opacity: 0.9;
+            filter: sepia(0.2);
+            pointer-events: none;
+        }
+
+        .stamp-1 { top: 12%; left: 8%; transform: rotate(15deg); }
+        .stamp-2 { bottom: 30%; right: 5%; transform: rotate(-10deg); }
+        .stamp-3 { top: 55%; left: 20%; transform: rotate(5deg); }
 
         .center-stage h1 {
             font-family: 'La Belle Aurore', cursive;
@@ -109,6 +182,7 @@
             background: rgba(255,255,255,0.6);
             padding: 0.2rem 0.5rem;
             border-radius: 4px;
+            display: inline-block;
         }
 
         /* --- Sticky Note Container Logic --- */
@@ -129,17 +203,25 @@
             background: var(--paper);
             padding: 1.2rem;
             box-shadow: 3px 5px 15px var(--shadow-soft);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            cursor: grab;
             position: absolute;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
             border-radius: 12px;
+            touch-action: none;
+            z-index: 5;
         }
 
-        /* The Tape/Pin Effect */
+        .note:active {
+            cursor: grabbing;
+            z-index: 1000 !important;
+            box-shadow: 10px 20px 30px var(--shadow-hover);
+            transform: scale(1.05);
+        }
+
         .note::before {
             content: '';
             position: absolute;
@@ -154,9 +236,7 @@
         }
 
         .note:hover {
-            transform: scale(1.15) rotate(0deg) !important;
             z-index: 100;
-            box-shadow: 10px 20px 30px var(--shadow-hover);
         }
 
         .note h3 {
@@ -165,6 +245,7 @@
             margin-bottom: 0.3rem;
             color: var(--ink);
             line-height: 1.1;
+            pointer-events: none;
         }
 
         .note p {
@@ -172,7 +253,7 @@
             line-height: 1.4;
             color: #555;
             flex-grow: 1;
-            /* Allow text clamping if needed, but excerpt is short */
+            pointer-events: none;
         }
 
         .note-footer {
@@ -183,6 +264,18 @@
             opacity: 0.6;
             border-top: 1px solid rgba(0,0,0,0.1);
             padding-top: 0.3rem;
+            pointer-events: none;
+        }
+
+        /* Visual Equation Style */
+        .math-equation {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1rem;
+            text-align: center;
+            color: #fff;
+            margin: 0.5rem 0;
+            opacity: 0.9;
         }
 
         /* Note Colors */
@@ -193,16 +286,15 @@
         .note.cherry h3, .note.cherry p { color: white; }
         
         /* Positioning Classes - Desktop */
-        /* Scattered somewhat randomly around the center title */
         .pos-1 { top: 10%; left: 15%; transform: rotate(-5deg); }
         .pos-2 { top: 12%; right: 20%; transform: rotate(4deg); }
         .pos-3 { top: 40%; left: 5%; transform: rotate(3deg); }
         .pos-4 { top: 45%; right: 5%; transform: rotate(-6deg); }
         .pos-5 { bottom: 15%; left: 15%; transform: rotate(-8deg); }
         .pos-6 { bottom: 12%; right: 18%; transform: rotate(5deg); }
-        .pos-7 { bottom: 5%; left: 45%; transform: translateX(-50%) rotate(2deg); } /* Pieper Note */
+        .pos-7 { bottom: 5%; left: 45%; transform: translateX(-50%) rotate(2deg); }
 
-        /* --- Footer / Bottom CTA Area --- */
+        /* --- Footer --- */
         .bottom-shelf {
             width: 100%;
             padding: 3rem 2rem;
@@ -228,24 +320,19 @@
             font-size: 1rem;
         }
 
-        .btn-primary {
-            background-color: var(--mustard);
+        .btn-primary { background-color: var(--mustard); color: var(--ink); }
+        .btn-primary:hover { background-color: #d4b220; transform: translateY(-2px); }
+        .btn-secondary { background-color: var(--olive); color: white; }
+        .btn-secondary:hover { background-color: #76854d; transform: translateY(-2px); }
+
+        .reset-link {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.8rem;
             color: var(--ink);
-        }
-        
-        .btn-primary:hover {
-            background-color: #d4b220;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--olive);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #76854d;
-            transform: translateY(-2px);
+            opacity: 0.5;
+            text-decoration: underline;
+            cursor: pointer;
         }
 
         /* --- Modal --- */
@@ -260,7 +347,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -274,17 +361,87 @@
             background: white;
             padding: 2rem;
             border-radius: 20px;
-            max-width: 450px;
+            max-width: 500px;
             width: 85%;
             position: relative;
             transform: translateY(30px);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            text-align: center;
+            text-align: left;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-overlay.active .modal-content {
             transform: translateY(0);
+        }
+
+        .modal-quote {
+            font-family: 'DM Sans', sans-serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink);
+            background: var(--bg-garden);
+            padding: 1.5rem;
+            border-left: 4px solid var(--mustard);
+            margin-bottom: 2rem;
+            border-radius: 4px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .modal-quote::before {
+            content: '“';
+            font-family: 'La Belle Aurore', cursive;
+            font-size: 3rem;
+            color: var(--mustard);
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            opacity: 0.5;
+        }
+
+        /* Journal Specific Styles */
+        .journal-container {
+            margin-top: 2rem;
+            border-top: 2px solid var(--bg-garden);
+            padding-top: 1rem;
+        }
+        .journal-header {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--olive);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        .journal-entry {
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .journal-entry:last-child {
+            border-bottom: none;
+        }
+        .journal-date {
+            font-family: 'La Belle Aurore', cursive;
+            font-size: 1.2rem;
+            color: var(--cherry);
+            margin-bottom: 0.5rem;
+        }
+        .journal-section {
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+        .journal-label {
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.2rem;
         }
 
         .close-btn {
@@ -299,87 +456,59 @@
             border: none;
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 900px) {
-            .garden-board {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-                padding-top: 2rem;
-                justify-content: flex-start;
-                align-items: center;
-            }
-            
-            .center-stage {
-                margin-top: 4rem;
-                margin-bottom: 2rem;
-                padding: 1rem;
-                z-index: 10;
-            }
-
-            .center-stage h1 {
-                font-size: 4rem;
-            }
-
-            .doodle-bg {
-                /* On mobile, move it to top right corner as a decorative stamp */
-                top: 1rem;
-                left: auto;
-                right: -20px;
-                transform: rotate(10deg);
-                width: 100px;
-            }
-            
-            /* Responsive Grid Logic for Mobile */
-            .scattered-notes {
-                position: relative;
-                height: auto;
-                width: 100%;
-                display: flex;
-                flex-wrap: wrap; /* Allow wrapping */
-                justify-content: center; /* Center rows */
-                gap: 1rem; /* Space between cards */
-                margin-bottom: 2rem;
-                pointer-events: auto;
-            }
-            
-            .note {
-                position: relative !important; /* Relative flow for grid */
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                bottom: auto !important;
-                width: 45%; /* Fit 2 cards per row approximately */
-                max-width: 170px;
-                min-height: 180px;
-                margin: 0;
-                /* Subtle random rotations for mobile grid */
-                transform: rotate(var(--mobile-rotate)) !important;
-            }
-
+            nav { justify-content: center; flex-wrap: wrap; gap: 1rem; padding-bottom: 0;}
+            .nav-right { margin-left: 0; }
+            .legend-bar { width: 100%; gap: 0.8rem; padding: 0.5rem; justify-content: center; }
+            .garden-board { flex-direction: column; height: auto; min-height: 100vh; padding-top: 2rem; justify-content: flex-start; align-items: center; }
+            .center-stage { margin-top: 2rem; margin-bottom: 2rem; padding: 1rem; z-index: 10; }
+            .center-stage h1 { font-size: 4rem; }
+            .doodle-bg { width: 100px; }
+            .doodle-1 { top: 20px; left: -10px; }
+            .doodle-2 { top: 20px; right: -10px; bottom: auto; }
+            .stamp-img { display: none; /* Hide stamps on mobile to reduce clutter */ }
+            .scattered-notes { position: relative; height: auto; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; pointer-events: auto; }
+            .note { position: relative !important; top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; width: 45%; max-width: 170px; min-height: 180px; margin: 0; transform: rotate(var(--mobile-rotate)) !important; }
             .note:nth-child(odd) { --mobile-rotate: -2deg; margin-top: 10px; }
             .note:nth-child(even) { --mobile-rotate: 2deg; }
-            
             .note h3 { font-size: 1.1rem; }
             .note p { font-size: 0.75rem; }
         }
-
     </style>
 </head>
 <body>
 
-    <!-- Navigation (Minimal) -->
+    <!-- Navigation -->
     <nav>
-        <a href="#join" class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Join the Collective</a>
+        <!-- Center: Legend -->
+        <div class="legend-bar">
+            <div class="legend-item"><span class="swatch olive"></span> Canonical & Wisdom</div>
+            <div class="legend-item"><span class="swatch cherry"></span> Technical & Systems</div>
+            <div class="legend-item"><span class="swatch mustard"></span> Creative & Tangible</div>
+            <div class="legend-item"><span class="swatch white"></span> Community & General</div>
+        </div>
+        
+        <!-- Right: Join Button -->
+        <div class="nav-right">
+            <a href="#join" class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">Join the Collective</a>
+        </div>
     </nav>
 
     <!-- Main Garden Board -->
     <main class="garden-board">
         
-        <!-- Doodle Background (Positioned absolutely on board) -->
-        <div class="doodle-bg">
-            <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_17dvmp17dvmp17dv.png?updatedAt=1766390152502" alt="Jeda Doodle" class="doodle-img">
+        <!-- Doodle Backgrounds -->
+        <div class="doodle-bg doodle-1">
+            <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_st6tg6st6tg6st6t.png" alt="Jeda Doodle 1" class="doodle-img">
         </div>
+        <div class="doodle-bg doodle-2">
+            <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_6bnyep6bnyep6bny.png" alt="Jeda Doodle 2" class="doodle-img">
+        </div>
+
+        <!-- Stamps -->
+        <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_g8j16kg8j16kg8j1.png" class="stamp-img stamp-1" alt="Stamp">
+        <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_g8j16kg8j16kg8j1.png" class="stamp-img stamp-2" alt="Stamp">
+        <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_g8j16kg8j16kg8j1.png" class="stamp-img stamp-3" alt="Stamp">
 
         <!-- Center Stage: Title -->
         <div class="center-stage">
@@ -388,54 +517,57 @@
         </div>
 
         <!-- Scattered Interactive Notes -->
-        <div class="scattered-notes">
+        <div class="scattered-notes" id="notes-container">
             
-            <!-- Note 1: Al-Ghazali -->
-            <div class="note olive pos-1" onclick="openModal('The Fortress of the Heart', 'Excerpt from Ihya Ulumuddin', '<strong>Reflection:</strong> &quot;Guarding the heart&quot; isn\'t about building walls; it\'s about managing the gates. In my grief, I realized I was closing all gates to protect myself, but that shut out the light too.<br><br><strong>Question:</strong> Which gate of your heart is stuck open to negativity, or stuck closed to kindness today?')">
+            <!-- Note 1: Al-Ghazali (Canonical -> Olive) -->
+            <div id="note-ghazali" class="note olive pos-1">
                 <h3>Al-Ghazali</h3>
                 <p>"The heart is like a fortress, and Satan is the enemy seeking to enter..."</p>
                 <div class="note-footer">The Theory</div>
             </div>
 
-            <!-- Note 2: Math / Polya -->
-            <div class="note white pos-2" onclick="openModal('The Smaller Problem', 'Excerpt from How to Solve It', '<strong>Reflection:</strong> Polya says if a problem is too hard, solve a simpler related one. When I feel overwhelmed by &quot;Saving AI&quot;, I shrink the problem: &quot;Can I just secure my own phone?&quot;<br><br><strong>Question:</strong> What is the &quot;easier problem&quot; hidden inside your current stress?')">
+            <!-- Note 2: Math / Polya (Technical -> Cherry) -->
+            <div id="note-polya" class="note cherry pos-2">
                 <h3>Polya's Math</h3>
                 <p>"If you can't solve a problem, then there is an easier problem you can solve: find it."</p>
                 <div class="note-footer">The Logic</div>
             </div>
 
-            <!-- Note 3: AI Equation / Tech -->
-            <div class="note cherry pos-3" onclick="openModal('Alignment is Mirroring', 'Notes from the Lab', '<strong>Reflection:</strong> We worry AI will destroy us, but it just mirrors us. If we are frantic, our tools are frantic. Building &quot;Calm AI&quot; starts with a calm architect.<br><br><strong>Question:</strong> If your AI learned solely from your actions yesterday, what kind of bot would it be?')">
+            <!-- Note 3: AI Equation / Tech (Technical -> Cherry) -->
+            <div id="note-ai" class="note cherry pos-3">
                 <h3>The AI Equation</h3>
-                <p>"Alignment is not code; it is the transfer of human values into a mathematical container."</p>
+                <div class="math-equation">
+                    L(θ) = -Σ y log(ŷ)
+                </div>
+                <p style="font-size: 0.7rem; opacity: 0.9;">"Alignment is not code; it is the transfer of human values into a mathematical container."</p>
                 <div class="note-footer">The Lab</div>
             </div>
 
-            <!-- Note 4: The "Box" / Products -->
-            <div class="note mustard pos-4" onclick="openModal('Tangible Strength', 'Prototype: Ocean Weights', '<strong>Reflection:</strong> Making dumbbells from recycled plastic taught me that &quot;waste&quot; is just resources in the wrong place. My grief (waste energy) can be poured into a mold to create strength.<br><br><strong>Question:</strong> What heavy feeling are you carrying that could be repurposed into a tool?')">
+            <!-- Note 4: The "Box" / Products (Creative -> Mustard) -->
+            <div id="note-box" class="note mustard pos-4">
                 <h3>The Box</h3>
                 <p>"Waste is just a resource in the wrong place." — Ocean Weights Prototype</p>
                 <div class="note-footer">The Hands</div>
             </div>
 
-            <!-- Note 5: Articles / Curation -->
-            <div class="note white pos-5" onclick="openModal('The Gift Economy', 'Reading: Sacred Economics', '<strong>Reflection:</strong> True wealth isn\'t what you hoard; it\'s what flows through you. My grant is a river, not a lake. I build tools to give them away.<br><br><strong>Question:</strong> What gift are you holding onto that is starting to feel heavy?')">
+            <!-- Note 5: Articles / Curation (General -> White) -->
+            <div id="note-articles" class="note white pos-5">
                 <h3>Articles</h3>
-                <p>"Security comes not from independence, but from interdependence."</p>
+                <p>“shukr itself becomes an existential state of being generative of abundance (ziyĀdah)...”</p>
                 <div class="note-footer">The Library</div>
             </div>
 
-            <!-- Note 6: Community -->
-            <div class="note olive pos-6" onclick="openModal('Digital Sovereignty', 'Community Manifesto', '<strong>Reflection:</strong> Sovereignty isn\'t doing everything alone. It\'s choosing who you rely on. I choose my neighbors over a server in Virginia.<br><br><strong>Question:</strong> Name 3 people who are part of your &quot;Human Sovereign Stack&quot;. Have you thanked them?')">
+            <!-- Note 6: Community (Community -> White) -->
+            <div id="note-village" class="note white pos-6">
                 <h3>The Village</h3>
                 <p>"Sovereignty is the capacity to choose your dependencies."</p>
                 <div class="note-footer">The Collective</div>
             </div>
 
-            <!-- Note 7: Josef Pieper -->
-            <div class="note white pos-7" onclick="openModal('Work & Festivity', 'Excerpt from In Tune with the World', '<strong>Reflection:</strong> We fill our days with &quot;pseudo-work&quot; (emails, scrolling) and wonder why we can\'t rest. True festivity—Jeda—only grows from soil tilled by meaningful effort. <br><br><strong>Question:</strong> Look at your to-do list. Which item is &quot;truly useful for living&quot;, and which is just pseudo-work?')">
+            <!-- Note 7: Josef Pieper (Wisdom -> Olive) -->
+            <div id="note-pieper" class="note olive pos-7">
                 <h3>Josef Pieper</h3>
-                <p>"Pseudo-festivals exist, as well as pseudo-work... only meaningful work can provide the soil in which festivity flourishes."</p>
+                <p>"Pseudo-festivals exist, as well as pseudo-work... only meaningful work can provide the soil..."</p>
                 <div class="note-footer">The Soul</div>
             </div>
 
@@ -453,6 +585,7 @@
                 Share Your Curriculum
             </button>
         </div>
+        <a onclick="resetLayout()" class="reset-link">Reset Desktop Layout</a>
     </div>
 
     <!-- Modal Template -->
@@ -461,21 +594,116 @@
             <button class="close-btn" onclick="toggleModal(false)">&times;</button>
             <h2 id="modalTitle" style="font-family: 'La Belle Aurore', cursive; font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--cherry);">Topic</h2>
             <p id="modalDesc" style="font-weight: 700; color: var(--olive); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-bottom: 1.5rem;">Description</p>
-            <p id="modalContent" style="font-size: 1.1rem; line-height: 1.6; color: #555;">Details go here.</p>
+            <div id="modalQuote" class="modal-quote"></div>
+            <div id="modalContent" style="font-size: 1.1rem; line-height: 1.6; color: #555;">Details go here.</div>
+            
+            <!-- Curriculum Logs Section -->
+            <div id="modalLogs" class="journal-container" style="display:none;">
+                <div class="journal-header">Curriculum Log</div>
+                <div id="modalLogsContent"></div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Modal Data with Logs
+        const noteData = {
+            'note-ghazali': {
+                title: 'The Fortress of the Heart',
+                desc: 'Excerpt from Ihya Ulumuddin',
+                quote: '"The heart is like a fortress, and Satan is the enemy seeking to enter..."',
+                content: '<strong>Reflection:</strong> &quot;Guarding the heart&quot; isn\'t about building walls; it\'s about managing the gates. In my grief, I realized I was closing all gates to protect myself, but that shut out the light too.<br><br><strong>Question:</strong> Which gate of your heart is stuck open to negativity, or stuck closed to kindness today?',
+                logs: [
+                    {
+                        date: 'Day 3: The Soul',
+                        book: 'Ihya Ulumuddin',
+                        contemplation: 'Dealing with the "Manager" voice (Inner Critic) using Ghazali\'s advice on vigilance.',
+                        science: 'Neuroscience of meditation/prayer (Default Mode Network).'
+                    }
+                ]
+            },
+            'note-polya': {
+                title: 'The Smaller Problem',
+                desc: 'Excerpt from How to Solve It',
+                quote: '"If you can\'t solve a problem, then there is an easier problem you can solve: find it."',
+                content: '<strong>Reflection:</strong> Polya says if a problem is too hard, solve a simpler related one. When I feel overwhelmed by &quot;Saving AI&quot;, I shrink the problem: &quot;Can I just secure my own phone?&quot;<br><br><strong>Question:</strong> What is the &quot;easier problem&quot; hidden inside your current stress?',
+                logs: [
+                    {
+                        date: 'Day 1: The Logic',
+                        book: 'How to Solve It',
+                        contemplation: 'Why I struggle to finish books (Perfectionism vs. Inspectional Reading).',
+                        science: 'Cognitive Load Theory (how the brain processes text).'
+                    }
+                ]
+            },
+            'note-ai': {
+                title: 'Alignment is Mirroring',
+                desc: 'Notes from the Lab',
+                quote: '"Alignment is not code; it is the transfer of human values into a mathematical container."',
+                content: '<strong>Reflection:</strong> We worry AI will destroy us, but it just mirrors us. If we are frantic, our tools are frantic. Building &quot;Calm AI&quot; starts with a calm architect.<br><br><strong>Question:</strong> If your AI learned solely from your actions yesterday, what kind of bot would it be?',
+                logs: [
+                    {
+                        date: 'Day 5: The Lab',
+                        book: 'Small is Beautiful',
+                        contemplation: 'The friction of coding a local LLM. Why slower is sometimes better.',
+                        science: 'Data Privacy research & Local LLM architecture.'
+                    }
+                ]
+            },
+            'note-box': {
+                title: 'Tangible Strength',
+                desc: 'Prototype: Ocean Weights',
+                quote: '"Waste is just a resource in the wrong place." — Ocean Weights Prototype',
+                content: '<strong>Reflection:</strong> Making dumbbells from recycled plastic taught me that &quot;waste&quot; is just resources in the wrong place. My grief (waste energy) can be poured into a mold to create strength.<br><br><strong>Question:</strong> What heavy feeling are you carrying that could be repurposed into a tool?',
+                logs: [
+                    {
+                        date: 'Weekend: Wintering',
+                        book: 'None',
+                        contemplation: 'Sewing lingerie as a form of architectural study. Precision in fabric vs. precision in code.',
+                        science: 'Somatic release through fine motor skills.'
+                    }
+                ]
+            },
+            'note-articles': {
+                title: 'The Gift Economy',
+                desc: 'Reading: Islamic Gift Economy (IGE)',
+                quote: '“shukr itself becomes an existential state of being generative of abundance (ziyĀdah) both material and spiritual,” (IGE, page 1)',
+                content: '<strong>Reflection:</strong> We often chase abundance to feel safe. But IGE teaches that <i>shukr</i> (gratitude) isn\'t a reaction to wealth; it\'s the <i>engine</i> that creates it. When I pause to appreciate what I have, I stop grasping and start generating.<br><br><strong>Question:</strong> What small asset do you have right now that, if appreciated fully, could grow into something more?',
+                logs: [
+                    {
+                        date: 'Day 4: The Village',
+                        book: 'Sacred Economics',
+                        contemplation: 'Why I chose a grant over VC funding. The cost of speed.',
+                        science: 'Evolutionary Biology (Reciprocal Altruism).'
+                    }
+                ]
+            },
+            'note-village': {
+                title: 'Digital Sovereignty',
+                desc: 'Community Manifesto',
+                quote: '"Sovereignty is the capacity to choose your dependencies."',
+                content: '<strong>Reflection:</strong> Sovereignty isn\'t doing everything alone. It\'s choosing who you rely on. I choose my neighbors over a server in Virginia.<br><br><strong>Question:</strong> Name 3 people who are part of your &quot;Human Sovereign Stack&quot;. Have you thanked them?',
+                logs: []
+            },
+            'note-pieper': {
+                title: 'Work & Festivity',
+                desc: 'Excerpt from In Tune with the World',
+                quote: '"Pseudo-festivals exist, as well as pseudo-work... only meaningful work can provide the soil in which festivity flourishes."',
+                content: '<strong>Reflection:</strong> We fill our days with &quot;pseudo-work&quot; (emails, scrolling) and wonder why we can\'t rest. True festivity—Jeda—only grows from soil tilled by meaningful effort. <br><br><strong>Question:</strong> Look at your to-do list. Which item is &quot;truly useful for living&quot;, and which is just pseudo-work?',
+                logs: []
+            }
+        };
+
         const modal = document.getElementById('infoModal');
         const mTitle = document.getElementById('modalTitle');
         const mDesc = document.getElementById('modalDesc');
         const mContent = document.getElementById('modalContent');
+        const mQuote = document.getElementById('modalQuote');
+        const mLogs = document.getElementById('modalLogs');
+        const mLogsContent = document.getElementById('modalLogsContent');
 
-        function openModal(title, desc, content) {
-            mTitle.innerText = title;
-            mDesc.innerText = desc;
-            mContent.innerHTML = content;
-            modal.classList.add('active');
+        function toggleModal(state) {
+            if(!state) modal.classList.remove('active');
         }
 
         function closeModal(e) {
@@ -484,24 +712,162 @@
             }
         }
 
-        function toggleModal(state) {
-            if(!state) modal.classList.remove('active');
+        // Drag and Drop Logic with Persistence
+        const notes = document.querySelectorAll('.note');
+        let activeNote = null;
+        let startX = 0; 
+        let startY = 0;
+        let initialLeft = 0; 
+        let initialTop = 0;
+        let isDragging = false;
+        const dragThreshold = 5; // Pixels to move before considering it a drag
+
+        // Load saved positions
+        function loadPositions() {
+            if (window.innerWidth <= 900) return;
+
+            const saved = JSON.parse(localStorage.getItem('jeda_layout'));
+            if (saved) {
+                Object.keys(saved).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.left = saved[id].left;
+                        el.style.top = saved[id].top;
+                        el.style.transform = saved[id].transform;
+                    }
+                });
+            }
         }
 
-        // Slight parallax for the notes to make them feel like they are floating
-        document.addEventListener('mousemove', (e) => {
-            if (window.innerWidth <= 900) return; // Disable parallax on mobile
+        function savePositions() {
+            if (window.innerWidth <= 900) return;
 
-            const notes = document.querySelectorAll('.note');
-            const x = (window.innerWidth - e.pageX * 2) / 100;
-            const y = (window.innerHeight - e.pageY * 2) / 100;
-
-            notes.forEach((note, index) => {
-                const speed = (index + 1) * 0.5;
-                note.style.marginLeft = `${x * speed}px`;
-                note.style.marginTop = `${y * speed}px`;
+            const layout = {};
+            notes.forEach(note => {
+                layout[note.id] = {
+                    left: note.style.left || getComputedStyle(note).left,
+                    top: note.style.top || getComputedStyle(note).top,
+                    transform: getComputedStyle(note).transform
+                };
             });
+            localStorage.setItem('jeda_layout', JSON.stringify(layout));
+        }
+
+        function resetLayout() {
+            localStorage.removeItem('jeda_layout');
+            location.reload();
+        }
+
+        loadPositions();
+
+        notes.forEach(note => {
+            note.addEventListener('mousedown', dragStart);
+            note.addEventListener('touchstart', dragStart, {passive: false});
         });
+
+        function dragStart(e) {
+            if (window.innerWidth <= 900) return;
+
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+            }
+
+            activeNote = this;
+            const rect = activeNote.getBoundingClientRect();
+            const parentRect = activeNote.parentElement.getBoundingClientRect();
+            
+            initialLeft = rect.left - parentRect.left;
+            initialTop = rect.top - parentRect.top;
+            
+            isDragging = false;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('touchmove', drag, {passive: false});
+            document.addEventListener('touchend', dragEnd);
+        }
+
+        function drag(e) {
+            if (!activeNote) return;
+            e.preventDefault();
+
+            let currentX, currentY;
+            if (e.type === 'touchmove') {
+                currentX = e.touches[0].clientX;
+                currentY = e.touches[0].clientY;
+            } else {
+                currentX = e.clientX;
+                currentY = e.clientY;
+            }
+
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+
+            if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
+                isDragging = true;
+            }
+
+            if (isDragging) {
+                activeNote.style.left = `${initialLeft + dx}px`;
+                activeNote.style.top = `${initialTop + dy}px`;
+                activeNote.style.transform = 'scale(1.05) rotate(0deg)'; 
+                activeNote.style.zIndex = 1000;
+            }
+        }
+
+        function dragEnd(e) {
+            if (!activeNote) return;
+
+            if (!isDragging) {
+                // Click: Open Modal
+                const id = activeNote.id;
+                const data = noteData[id];
+                if (data) {
+                    mTitle.innerText = data.title;
+                    mDesc.innerText = data.desc;
+                    if(data.quote) {
+                        mQuote.style.display = 'block';
+                        mQuote.innerText = data.quote;
+                    } else {
+                        mQuote.style.display = 'none';
+                    }
+                    mContent.innerHTML = data.content;
+
+                    // Render Logs if available
+                    if (data.logs && data.logs.length > 0) {
+                        mLogs.style.display = 'block';
+                        mLogsContent.innerHTML = data.logs.map(log => `
+                            <div class="journal-entry">
+                                <div class="journal-date">${log.date}</div>
+                                <div class="journal-section"><span class="journal-label">📖 Book:</span> ${log.book}</div>
+                                <div class="journal-section"><span class="journal-label">💭 Contemplation:</span> ${log.contemplation}</div>
+                                <div class="journal-section"><span class="journal-label">🔬 Science/Build:</span> ${log.science}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        mLogs.style.display = 'none';
+                    }
+
+                    modal.classList.add('active');
+                }
+            } else {
+                // Drag: Save Position
+                savePositions();
+                activeNote.style.zIndex = '';
+                activeNote.style.transform = 'rotate(' + (Math.random() * 6 - 3) + 'deg)';
+            }
+
+            activeNote = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', dragEnd);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', dragEnd);
+        }
+
     </script>
 </body>
 </html>
