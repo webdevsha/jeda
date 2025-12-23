@@ -47,7 +47,7 @@
             justify-content: flex-end; /* Logo is now center stage, nav is for actions */
             align-items: center;
             max-width: 1200px;
-            z-index: 10;
+            z-index: 50; /* High z-index to stay clickable */
         }
 
         /* --- The Garden Board (Main Content) --- */
@@ -67,32 +67,33 @@
         .center-stage {
             z-index: 20;
             text-align: center;
-            /* Removed background and border for cleaner look */
             padding: 2rem;
             max-width: 400px;
             position: relative;
         }
 
-        /* Doodle as a scattered element */
-        .doodle-container {
+        /* Doodle as a background element */
+        .doodle-bg {
             position: absolute;
-            top: -120px; /* Moved up to clear title */
-            left: 60%; /* Offset to the right */
-            transform: translateX(-50%) rotate(5deg);
-            z-index: 25;
+            /* Positioned relative to garden-board, offset from center to avoid title */
+            top: 50px; 
+            left: 45%; 
+            transform: translateX(-50%) rotate(-15deg);
+            z-index: 1; /* Low z-index to be behind notes and title */
             pointer-events: none; /* Let clicks pass through */
+            opacity: 0.8;
         }
 
         .doodle-img {
-            width: 140px;
+            width: 180px; /* Slightly larger as background */
             height: auto;
             display: block;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.05));
         }
 
         .center-stage h1 {
             font-family: 'La Belle Aurore', cursive;
-            font-size: 5rem; /* Larger for impact without container */
+            font-size: 5rem;
             color: var(--ink);
             line-height: 0.9;
             margin-bottom: 0.5rem;
@@ -123,8 +124,8 @@
         /* --- Sticky Note Styles --- */
         .note {
             pointer-events: auto;
-            width: 180px; /* Smaller default size */
-            min-height: 180px;
+            width: 190px;
+            min-height: 190px;
             background: var(--paper);
             padding: 1.2rem;
             box-shadow: 3px 5px 15px var(--shadow-soft);
@@ -135,7 +136,7 @@
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
-            border-radius: 12px; /* More rounded corners */
+            border-radius: 12px;
         }
 
         /* The Tape/Pin Effect */
@@ -160,7 +161,7 @@
 
         .note h3 {
             font-family: 'La Belle Aurore', cursive;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 0.3rem;
             color: var(--ink);
             line-height: 1.1;
@@ -171,6 +172,7 @@
             line-height: 1.4;
             color: #555;
             flex-grow: 1;
+            /* Allow text clamping if needed, but excerpt is short */
         }
 
         .note-footer {
@@ -190,13 +192,15 @@
         .note.cherry { background-color: var(--cherry); color: white; }
         .note.cherry h3, .note.cherry p { color: white; }
         
-        /* Positioning Classes - Desktop (More scattered near center) */
-        .pos-1 { top: 15%; left: 30%; transform: rotate(-5deg); } /* Closer to top center */
-        .pos-2 { top: 25%; right: 25%; transform: rotate(4deg); } /* Closer to top center */
-        .pos-3 { top: 60%; left: 25%; transform: rotate(3deg); } /* Near center */
-        .pos-4 { top: 65%; right: 20%; transform: rotate(-6deg); } /* Near center */
-        .pos-5 { bottom: 10%; left: 10%; transform: rotate(-8deg); } /* Corner */
-        .pos-6 { bottom: 15%; right: 10%; transform: rotate(5deg); } /* Corner */
+        /* Positioning Classes - Desktop */
+        /* Scattered somewhat randomly around the center title */
+        .pos-1 { top: 10%; left: 15%; transform: rotate(-5deg); }
+        .pos-2 { top: 12%; right: 20%; transform: rotate(4deg); }
+        .pos-3 { top: 40%; left: 5%; transform: rotate(3deg); }
+        .pos-4 { top: 45%; right: 5%; transform: rotate(-6deg); }
+        .pos-5 { bottom: 15%; left: 15%; transform: rotate(-8deg); }
+        .pos-6 { bottom: 12%; right: 18%; transform: rotate(5deg); }
+        .pos-7 { bottom: 5%; left: 45%; transform: translateX(-50%) rotate(2deg); } /* Pieper Note */
 
         /* --- Footer / Bottom CTA Area --- */
         .bottom-shelf {
@@ -268,8 +272,8 @@
 
         .modal-content {
             background: white;
-            padding: 2rem; /* reduced padding */
-            border-radius: 20px; /* rounded modal */
+            padding: 2rem;
+            border-radius: 20px;
             max-width: 450px;
             width: 85%;
             position: relative;
@@ -298,7 +302,6 @@
         /* Mobile Adjustments */
         @media (max-width: 900px) {
             .garden-board {
-                /* On mobile, use flex column but keep notes visible */
                 flex-direction: column;
                 height: auto;
                 min-height: 100vh;
@@ -308,61 +311,57 @@
             }
             
             .center-stage {
-                margin-top: 6rem; /* Push down significantly */
-                margin-bottom: 3rem;
+                margin-top: 4rem;
+                margin-bottom: 2rem;
                 padding: 1rem;
-                z-index: 10; /* Ensure title is behind top notes if they overlap */
+                z-index: 10;
             }
 
             .center-stage h1 {
                 font-size: 4rem;
             }
 
-            .doodle-container {
-                top: -90px;
-                left: 70%; /* Move aside on mobile too */
+            .doodle-bg {
+                /* On mobile, move it to top right corner as a decorative stamp */
+                top: 1rem;
+                left: auto;
+                right: -20px;
+                transform: rotate(10deg);
                 width: 100px;
             }
             
-            /* On mobile, scattered notes logic */
+            /* Responsive Grid Logic for Mobile */
             .scattered-notes {
                 position: relative;
                 height: auto;
                 width: 100%;
                 display: flex;
-                flex-direction: column; /* Stack them but offset */
-                align-items: center;
-                gap: 1.5rem;
+                flex-wrap: wrap; /* Allow wrapping */
+                justify-content: center; /* Center rows */
+                gap: 1rem; /* Space between cards */
                 margin-bottom: 2rem;
                 pointer-events: auto;
             }
             
             .note {
-                position: relative; /* Relative flow for mobile */
+                position: relative !important; /* Relative flow for grid */
                 top: auto !important;
                 left: auto !important;
                 right: auto !important;
                 bottom: auto !important;
-                /* No transform important here, let nth-child handle it */
-                width: 160px;
-                min-height: 160px;
+                width: 45%; /* Fit 2 cards per row approximately */
+                max-width: 170px;
+                min-height: 180px;
                 margin: 0;
+                /* Subtle random rotations for mobile grid */
+                transform: rotate(var(--mobile-rotate)) !important;
             }
 
-            /* Manual scattering for mobile via nth-child */
-            .note:nth-child(1) { transform: translateX(-30%) rotate(-5deg); margin-top: -20px; } /* Above title area theoretically if we used absolute, but here it's flow. Let's make it look scattered. */
-            .note:nth-child(2) { transform: translateX(30%) rotate(4deg); margin-top: -40px; }
-            .note:nth-child(3) { transform: translateX(-20%) rotate(2deg); margin-top: -20px; }
-            .note:nth-child(4) { transform: translateX(25%) rotate(-3deg); margin-top: -20px; }
-            .note:nth-child(5) { transform: translateX(-10%) rotate(6deg); margin-top: -20px; }
-            .note:nth-child(6) { transform: translateX(15%) rotate(-4deg); margin-top: -20px; }
+            .note:nth-child(odd) { --mobile-rotate: -2deg; margin-top: 10px; }
+            .note:nth-child(even) { --mobile-rotate: 2deg; }
             
-            /* Special handling to put some notes "above" or near title visually in flow? 
-               In flex column, they come after. To put them before, we'd need to change DOM order or use absolute. 
-               Let's keep them after but pull the first ones up negatively. */
-             .scattered-notes {
-                 margin-top: -50px; /* Pull the whole stack up to overlap title bottom */
-             }
+            .note h3 { font-size: 1.1rem; }
+            .note p { font-size: 0.75rem; }
         }
 
     </style>
@@ -377,12 +376,13 @@
     <!-- Main Garden Board -->
     <main class="garden-board">
         
-        <!-- Center Stage: Title & Branding -->
+        <!-- Doodle Background (Positioned absolutely on board) -->
+        <div class="doodle-bg">
+            <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_6bnyep6bnyep6bny.png">
+        </div>
+
+        <!-- Center Stage: Title -->
         <div class="center-stage">
-            <div class="doodle-container">
-                <!-- Using the ImageKit URL provided -->
-                <img src="https://ik.imagekit.io/cbctech/Gemini_Generated_Image_17dvmp17dvmp17dv.png?updatedAt=1766390152502" alt="Jeda Doodle" class="doodle-img">
-            </div>
             <h1>Jeda</h1>
             <p>Pause Daily. Build Slowly.</p>
         </div>
@@ -391,45 +391,52 @@
         <div class="scattered-notes">
             
             <!-- Note 1: Al-Ghazali -->
-            <div class="note olive pos-1" onclick="openModal('The Soul', 'Exploring the inner architecture.', 'Currently reading: Ihya Ulumuddin by Al-Ghazali. Focus on Niat (Intention) and the purification of the heart as a prerequisite for building technology.')">
+            <div class="note olive pos-1" onclick="openModal('The Fortress of the Heart', 'Excerpt from Ihya Ulumuddin', '<strong>Reflection:</strong> &quot;Guarding the heart&quot; isn\'t about building walls; it\'s about managing the gates. In my grief, I realized I was closing all gates to protect myself, but that shut out the light too.<br><br><strong>Question:</strong> Which gate of your heart is stuck open to negativity, or stuck closed to kindness today?')">
                 <h3>Al-Ghazali</h3>
-                <p>The internal operating system. Guarding the heart.</p>
+                <p>"The heart is like a fortress, and Satan is the enemy seeking to enter..."</p>
                 <div class="note-footer">The Theory</div>
             </div>
 
             <!-- Note 2: Math / Polya -->
-            <div class="note white pos-2" onclick="openModal('Logic & Systems', 'Finding beauty in structure.', 'Reading: How to Solve It by G. Polya. Understanding the heuristics of problem-solving before writing a single line of code.')">
+            <div class="note white pos-2" onclick="openModal('The Smaller Problem', 'Excerpt from How to Solve It', '<strong>Reflection:</strong> Polya says if a problem is too hard, solve a simpler related one. When I feel overwhelmed by &quot;Saving AI&quot;, I shrink the problem: &quot;Can I just secure my own phone?&quot;<br><br><strong>Question:</strong> What is the &quot;easier problem&quot; hidden inside your current stress?')">
                 <h3>Polya's Math</h3>
-                <p>Heuristics. Geometry. The beauty of a solvable problem.</p>
+                <p>"If you can't solve a problem, then there is an easier problem you can solve: find it."</p>
                 <div class="note-footer">The Logic</div>
             </div>
 
             <!-- Note 3: AI Equation / Tech -->
-            <div class="note cherry pos-3" onclick="openModal('AI & Safety', 'Building the defense.', 'Researching: Local LLMs, Privacy Preservation, and the compute costs of sovereignty. Building Family-CommunityAI.')">
+            <div class="note cherry pos-3" onclick="openModal('Alignment is Mirroring', 'Notes from the Lab', '<strong>Reflection:</strong> We worry AI will destroy us, but it just mirrors us. If we are frantic, our tools are frantic. Building &quot;Calm AI&quot; starts with a calm architect.<br><br><strong>Question:</strong> If your AI learned solely from your actions yesterday, what kind of bot would it be?')">
                 <h3>The AI Equation</h3>
-                <p>Alignment. Robustness. Cost of Sovereignty.</p>
+                <p>"Alignment is not code; it is the transfer of human values into a mathematical container."</p>
                 <div class="note-footer">The Lab</div>
             </div>
 
             <!-- Note 4: The "Box" / Products -->
-            <div class="note mustard pos-4" onclick="openModal('Teringin / Products', 'Tangible creations.', 'Prototyping: Ocean Weight Dumbbells (Recycled Plastic) and the Jeda Candle Timer. Making ideas holdable.')">
+            <div class="note mustard pos-4" onclick="openModal('Tangible Strength', 'Prototype: Ocean Weights', '<strong>Reflection:</strong> Making dumbbells from recycled plastic taught me that &quot;waste&quot; is just resources in the wrong place. My grief (waste energy) can be poured into a mold to create strength.<br><br><strong>Question:</strong> What heavy feeling are you carrying that could be repurposed into a tool?')">
                 <h3>The Box</h3>
-                <p>Physical artifacts. 3D Prints. Sewing. Tangible inputs.</p>
+                <p>"Waste is just a resource in the wrong place." — Ocean Weights Prototype</p>
                 <div class="note-footer">The Hands</div>
             </div>
 
             <!-- Note 5: Articles / Curation -->
-            <div class="note white pos-5" onclick="openModal('Curated Reads', 'Filtering the noise.', 'Collection: Papers on Biomimicry, Gift Economy (Eisenstein), and Digital Minimalism. Curating a curriculum for the modern soul.')">
+            <div class="note white pos-5" onclick="openModal('The Gift Economy', 'Reading: Sacred Economics', '<strong>Reflection:</strong> True wealth isn\'t what you hoard; it\'s what flows through you. My grant is a river, not a lake. I build tools to give them away.<br><br><strong>Question:</strong> What gift are you holding onto that is starting to feel heavy?')">
                 <h3>Articles</h3>
-                <p>Biomimicry. Gift Economy. Digital Minimalism.</p>
+                <p>"Security comes not from independence, but from interdependence."</p>
                 <div class="note-footer">The Library</div>
             </div>
 
             <!-- Note 6: Community -->
-            <div class="note olive pos-6" onclick="openModal('The Village', 'We build together.', 'Join the Jeda Collective. A monthly gathering to share our personal curriculums and build sovereign systems.')">
+            <div class="note olive pos-6" onclick="openModal('Digital Sovereignty', 'Community Manifesto', '<strong>Reflection:</strong> Sovereignty isn\'t doing everything alone. It\'s choosing who you rely on. I choose my neighbors over a server in Virginia.<br><br><strong>Question:</strong> Name 3 people who are part of your &quot;Human Sovereign Stack&quot;. Have you thanked them?')">
                 <h3>The Village</h3>
-                <p>Community. Shared Curriculum. Safe Spaces.</p>
+                <p>"Sovereignty is the capacity to choose your dependencies."</p>
                 <div class="note-footer">The Collective</div>
+            </div>
+
+            <!-- Note 7: Josef Pieper -->
+            <div class="note white pos-7" onclick="openModal('Work & Festivity', 'Excerpt from In Tune with the World', '<strong>Reflection:</strong> We fill our days with &quot;pseudo-work&quot; (emails, scrolling) and wonder why we can\'t rest. True festivity—Jeda—only grows from soil tilled by meaningful effort. <br><br><strong>Question:</strong> Look at your to-do list. Which item is &quot;truly useful for living&quot;, and which is just pseudo-work?')">
+                <h3>Josef Pieper</h3>
+                <p>"Pseudo-festivals exist, as well as pseudo-work... only meaningful work can provide the soil in which festivity flourishes."</p>
+                <div class="note-footer">The Soul</div>
             </div>
 
         </div>
@@ -438,7 +445,7 @@
     <!-- Bottom Actions -->
     <div class="bottom-shelf" id="join">
         <div class="cta-container">
-            <a href="https://instagram.com" target="_blank" class="btn btn-primary">
+            <a href="https://www.instagram.com/jedatoday/" target="_blank" class="btn btn-primary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                 Follow Jeda
             </a>
@@ -467,7 +474,7 @@
         function openModal(title, desc, content) {
             mTitle.innerText = title;
             mDesc.innerText = desc;
-            mContent.innerText = content;
+            mContent.innerHTML = content;
             modal.classList.add('active');
         }
 
@@ -490,11 +497,7 @@
             const y = (window.innerHeight - e.pageY * 2) / 100;
 
             notes.forEach((note, index) => {
-                // Different speeds for depth perception
                 const speed = (index + 1) * 0.5;
-                // We keep the initial rotation defined in CSS classes by only adjusting translate
-                // This requires a bit more complex logic if we want to preserve specific rotations
-                // For simplicity here, we add a subtle drift
                 note.style.marginLeft = `${x * speed}px`;
                 note.style.marginTop = `${y * speed}px`;
             });
